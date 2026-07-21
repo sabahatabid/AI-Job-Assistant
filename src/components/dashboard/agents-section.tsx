@@ -49,6 +49,35 @@ const agents = [
 ];
 
 export function AgentsSection() {
+  const [loadingAgent, setLoadingAgent] = useState<string | null>(null);
+
+  async function handleAgentRun(agentTitle: string) {
+    setLoadingAgent(agentTitle);
+    try {
+      const res = await fetch("/api/agents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agent: agentTitle.toLowerCase().replace(/[^a-z]+/g, "-"),
+          prompt: `Help with ${agentTitle}`,
+          context: "User wants practical next steps.",
+        }),
+      });
+
+      const data = await res.json();
+      if (data?.reply) {
+        alert(`${agentTitle} — Response:\n\n${data.reply}`);
+      } else {
+        alert(`${agentTitle} — No response from agent.`);
+      }
+    } catch (e) {
+      console.error(e);
+      alert(`${agentTitle} — Agent request failed.`);
+    } finally {
+      setLoadingAgent(null);
+    }
+  }
+
   return (
     <section className="rounded-[32px] border border-white/10 bg-slate-900/70 p-5 shadow-xl shadow-slate-950/20 sm:p-8">
       <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">

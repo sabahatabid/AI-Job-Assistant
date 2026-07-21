@@ -5,6 +5,24 @@ import {
   Bell,
   Briefcase,
   ChevronRight,
+  
+  async function handleAgentRun(agentKey: string, title?: string) {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/agents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agent: agentKey, prompt: `Run ${title ?? agentKey}`, context: "dashboard" }),
+      });
+      const data = await res.json();
+      setAgentResponse(data?.reply ?? "No response");
+    } catch (e) {
+      console.error(e);
+      setAgentResponse("Agent request failed.");
+    } finally {
+      setLoading(false);
+    }
+  }
   CircleDollarSign,
   LayoutDashboard,
   MessageSquareText,
