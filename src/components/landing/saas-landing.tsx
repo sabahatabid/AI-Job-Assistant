@@ -104,7 +104,7 @@ const faqs = [
   },
 ];
 
-export function SaaSLanding() {
+export function SaaSLanding({ onGetStarted }: { onGetStarted?: () => void }) {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_transparent_35%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#111827_100%)] text-slate-100">
       <main className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
@@ -126,7 +126,7 @@ export function SaaSLanding() {
                 Design, ship, and scale delightful AI experiences with agents that feel native to your company.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button className="rounded-full bg-white px-6 text-slate-900 hover:bg-slate-100">
+                <Button onClick={onGetStarted} className="rounded-full bg-white px-6 text-slate-900 hover:bg-slate-100">
                   Get started free <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button variant="outline" className="rounded-full border-white/20 bg-slate-950/60 text-white hover:bg-slate-900">
