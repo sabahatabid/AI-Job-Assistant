@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Bell,
@@ -38,45 +37,6 @@ const notifications = [
 ];
 
 export function DashboardShell() {
-  const [activeView, setActiveView] = useState("Overview");
-  const [agentResponse, setAgentResponse] = useState("Select an agent or section to see its live guidance.");
-  const [loading, setLoading] = useState(false);
-
-  const navItems = useMemo(
-    () => [
-      { label: "Overview", icon: LayoutDashboard },
-      { label: "Applications", icon: Briefcase },
-      { label: "Interviews", icon: MessageSquareText },
-      { label: "Offers", icon: CircleDollarSign },
-      { label: "Settings", icon: Settings },
-    ],
-    []
-  );
-
-  async function handleAgentRun(agent: string) {
-    setLoading(true);
-    setAgentResponse(`Running ${agent}...`);
-
-    try {
-      const response = await fetch("/api/agents", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          agent: agent.toLowerCase().replace(/[^a-z]+/g, "-"),
-          prompt: `Help me with ${agent} for my job search.`,
-          context: "User is preparing for a high-impact role search and wants practical next actions.",
-        }),
-      });
-
-      const data = await response.json();
-      setAgentResponse(data.reply || "The agent is ready to help.");
-    } catch {
-      setAgentResponse("The agent could not be reached right now. Please try again shortly.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.13),_transparent_30%),#020617] text-slate-100">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-3 py-3 lg:flex-row lg:px-6 lg:py-6">
@@ -92,17 +52,14 @@ export function DashboardShell() {
           </div>
 
           <nav className="mt-8 space-y-2">
-            {navItems.map(({ label, icon: Icon }) => (
-              <button
-                key={label}
-                onClick={() => {
-                  setActiveView(label);
-                  setAgentResponse(`Viewing ${label.toLowerCase()} workspace.`);
-                }}
-                className={`flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left text-sm transition ${
-                  activeView === label ? "bg-cyan-400/15 text-white" : "text-slate-300 hover:bg-white/10 hover:text-white"
-                }`}
-              >
+            {([
+              [LayoutDashboard, "Overview"],
+              [Briefcase, "Applications"],
+              [MessageSquareText, "Interviews"],
+              [CircleDollarSign, "Offers"],
+              [Settings, "Settings"],
+            ] as Array<[React.ComponentType<{ className?: string }>, string]>).map(([Icon, label]) => (
+              <button key={label} className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10 hover:text-white">
                 <span className="flex items-center gap-3">
                   <Icon className="h-4 w-4" />
                   {label}
@@ -127,7 +84,6 @@ export function DashboardShell() {
               <div>
                 <p className="text-sm text-cyan-200">Good morning, Maya</p>
                 <h1 className="text-2xl font-semibold text-white">Your job search is accelerating.</h1>
-                <p className="mt-2 text-sm text-slate-400">Active workspace: {activeView}</p>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-300">
@@ -181,28 +137,14 @@ export function DashboardShell() {
 
             <Card className="border-white/10 bg-slate-900/70 shadow-lg shadow-slate-950/20">
               <CardHeader>
-                <CardTitle className="text-white">Live agent guidance</CardTitle>
+                <CardTitle className="text-white">Notifications</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-3 text-sm text-cyan-100">
-                  {loading ? "Working on your request..." : agentResponse}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "Resume Agent",
-                    "Job Match Agent",
-                    "Interview Coach Agent",
-                  ].map((agent) => (
-                    <Button
-                      key={agent}
-                      variant="outline"
-                      className="border-white/10 bg-transparent text-slate-200 hover:bg-white/10"
-                      onClick={() => handleAgentRun(agent)}
-                    >
-                      {agent}
-                    </Button>
-                  ))}
-                </div>
+                {notifications.map((note) => (
+                  <div key={note} className="rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-sm text-slate-300">
+                    {note}
+                  </div>
+                ))}
               </CardContent>
             </Card>
           </section>

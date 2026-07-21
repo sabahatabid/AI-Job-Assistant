@@ -49,25 +49,6 @@ const agents = [
 ];
 
 export function AgentsSection() {
-  async function handleAgentRun(agentTitle: string) {
-    try {
-      const response = await fetch("/api/agents", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          agent: agentTitle.toLowerCase().replace(/[^a-z]+/g, "-"),
-          prompt: `Help me with ${agentTitle}.`,
-          context: "User wants a practical next step for their job search.",
-        }),
-      });
-
-      const data = await response.json();
-      alert(data.reply || "Agent completed successfully.");
-    } catch {
-      alert("The agent could not be reached right now.");
-    }
-  }
-
   return (
     <section className="rounded-[32px] border border-white/10 bg-slate-900/70 p-5 shadow-xl shadow-slate-950/20 sm:p-8">
       <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
@@ -100,13 +81,10 @@ export function AgentsSection() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm leading-7 text-slate-400">{agent.description}</p>
-                  <button
-                    onClick={() => handleAgentRun(agent.title)}
-                    className="mt-4 flex items-center gap-2 text-sm text-cyan-200 transition hover:text-cyan-100"
-                  >
+                  <div className="mt-4 flex items-center gap-2 text-sm text-cyan-200">
                     <Bot className="h-4 w-4" />
-                    Run now
-                  </button>
+                    Ready to run
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
