@@ -1,11 +1,9 @@
 "use client";
 
-import { createClient } from "./auth-client";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/frontend/components/ui/button";
+import { supabase } from "./auth-client";
 
 export function AuthButton() {
-  const supabase = createClient();
-
   async function handleAuth() {
     if (!supabase) {
       alert("Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to enable auth.");
@@ -14,12 +12,15 @@ export function AuthButton() {
 
     const { error } = await supabase.auth.signInWithOtp({
       email: "demo@example.com",
-      options: { emailRedirectTo: `${window.location.origin}/` },
+      options: { emailRedirectTo: `${window.location.origin}/dashboard` },
     });
 
-    if (!error) {
-      alert("Check your inbox to continue with Supabase auth.");
+    if (error) {
+      alert(error.message);
+      return;
     }
+
+    alert("Check your inbox to continue with Supabase auth.");
   }
 
   return <Button onClick={handleAuth}>Sign in with magic link</Button>;

@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Briefcase, Sparkles } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/frontend/components/ui/card";
+import { Badge } from "@/frontend/components/ui/badge";
 
 const opportunities = [
   {

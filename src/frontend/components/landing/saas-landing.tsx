@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -11,39 +12,39 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/frontend/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/frontend/components/ui/card";
 
 const features = [
   {
     icon: Sparkles,
-    title: "Agentic workflows",
-    description: "Launch AI agents that research, draft, and execute on your behalf in minutes.",
+    title: "Career-ready outcomes",
+    description: "Optimize resumes, applications, and interviews with data-driven AI recommendations.",
   },
   {
     icon: ShieldCheck,
-    title: "Enterprise-grade trust",
-    description: "Role-based controls, audit trails, and secure-by-default infrastructure.",
+    title: "Premium career workflows",
+    description: "Multi-agent orchestration that moves your job search forward with clarity and momentum.",
   },
   {
     icon: Zap,
-    title: "Instant time-to-value",
-    description: "Get from idea to production with templates, guardrails, and automation baked in.",
+    title: "Speed and simplicity",
+    description: "Instant insights, polished documents, and guided next steps in a product-grade experience.",
   },
 ];
 
 const agents = [
   {
-    name: "Research Copilot",
-    blurb: "Surface signal-rich insights from your product, market, and customer conversations.",
+    name: "Resume Agent",
+    blurb: "Score, optimize, and strengthen your resume for ATS and hiring managers.",
   },
   {
-    name: "Workflow Orchestrator",
-    blurb: "Chain approvals, automations, and handoffs across your best team rituals.",
+    name: "Job Match Agent",
+    blurb: "Match your profile to roles with fit scoring, missing skill recommendations, and role analysis.",
   },
   {
-    name: "Revenue Concierge",
-    blurb: "Turn every customer touchpoint into a tailored follow-up and upsell motion.",
+    name: "Interview Coach Agent",
+    blurb: "Generate questions, practice answers, and get feedback for your next interview.",
   },
 ];
 
@@ -104,7 +105,23 @@ const faqs = [
   },
 ];
 
-export function SaaSLanding({ onGetStarted }: { onGetStarted?: () => void }) {
+export function SaaSLanding({
+  onGetStarted,
+  onWatchWalkthrough,
+}: {
+  onGetStarted?: () => void;
+  onWatchWalkthrough?: () => void;
+}) {
+  const handleWatchWalkthrough = useCallback(() => {
+    if (onWatchWalkthrough) {
+      onWatchWalkthrough();
+      return;
+    }
+
+    const section = document.getElementById("walkthrough");
+    section?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [onWatchWalkthrough]);
+
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_transparent_35%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#111827_100%)] text-slate-100">
       <main className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
@@ -117,26 +134,30 @@ export function SaaSLanding({ onGetStarted }: { onGetStarted?: () => void }) {
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div className="max-w-2xl">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-sm font-medium text-cyan-200">
-                <Bot className="h-4 w-4" /> New · Autonomous AI workspace
+                <Bot className="h-4 w-4" /> Introducing CareerPilot AI
               </div>
               <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
-                The premium AI operating system for modern teams.
+                The intelligent career copilot for high-growth professionals.
               </h1>
               <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300 sm:text-xl">
-                Design, ship, and scale delightful AI experiences with agents that feel native to your company.
+                From resume polish to interview preparation, CareerPilot AI orchestrates every career action with premium workflows and AI agents.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button onClick={onGetStarted} className="rounded-full bg-white px-6 text-slate-900 hover:bg-slate-100">
-                  Get started free <ArrowRight className="ml-2 h-4 w-4" />
+                  Launch CareerPilot <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-                <Button variant="outline" className="rounded-full border-white/20 bg-slate-950/60 text-white hover:bg-slate-900">
-                  <CirclePlay className="mr-2 h-4 w-4" /> Watch demo
+                <Button
+                  variant="outline"
+                  onClick={handleWatchWalkthrough}
+                  className="rounded-full border-white/20 bg-slate-950/60 text-white hover:bg-slate-900"
+                >
+                  <CirclePlay className="mr-2 h-4 w-4" /> Watch walkthrough
                 </Button>
               </div>
               <div className="mt-8 flex flex-wrap gap-6 text-sm text-slate-400">
-                <span>4.9/5 from 2,000+ teams</span>
-                <span>99.9% uptime</span>
-                <span>SOC 2 ready</span>
+                <span>150K+ career plans created</span>
+                <span>Built for professionals</span>
+                <span>Designed for speed</span>
               </div>
             </div>
 
@@ -204,12 +225,52 @@ export function SaaSLanding({ onGetStarted }: { onGetStarted?: () => void }) {
         <section className="rounded-[32px] border border-white/10 bg-slate-900/70 p-6 shadow-xl shadow-slate-950/20 sm:p-8 lg:p-10">
           <div className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-200">AI agents showcase</p>
-              <h2 className="mt-2 text-3xl font-semibold text-white">Purpose-built agents for every stage of work.</h2>
+              <p className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-200">Trusted by modern teams</p>
+              <h2 className="mt-2 text-3xl font-semibold text-white">Built for ambitious professionals.</h2>
             </div>
-            <p className="max-w-xl text-slate-400">From discovery to delivery, each agent becomes a calm, reliable teammate with clear context and measurable outcomes.</p>
+            <p className="max-w-xl text-slate-400">Deliver smarter career outcomes with a polished AI assistant that feels premium and reliable.</p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {['Vertex', 'Nova Labs', 'Astra', 'Eclipse', 'CoreWave', 'Summit'].map((company) => (
+              <div key={company} className="rounded-3xl border border-white/10 bg-slate-950/70 p-5 text-center text-sm text-slate-300">
+                {company}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="walkthrough" className="rounded-[32px] border border-white/10 bg-slate-900/70 p-6 shadow-xl shadow-slate-950/20 sm:p-8 lg:p-10">
+          <div className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-200">How it works</p>
+              <h2 className="mt-2 text-3xl font-semibold text-white">From resume review to interview readiness.</h2>
+            </div>
+            <p className="max-w-xl text-slate-400">CareerPilot AI connects every step into one smooth workflow, guided by intelligent agents.</p>
           </div>
           <div className="grid gap-4 lg:grid-cols-3">
+            {[
+              {
+                title: 'Prepare',
+                description: 'Upload your resume, select a role, and let AI audit your positioning for the market.',
+              },
+              {
+                title: 'Match',
+                description: 'Get role recommendations, fit scores, and missing skill insights tailored to you.',
+              },
+              {
+                title: 'Launch',
+                description: 'Draft cover letters, generate interview practice, and track every submission effortlessly.',
+              },
+            ].map((item) => (
+              <div key={item.title} className="rounded-3xl border border-white/10 bg-slate-950/70 p-6">
+                <p className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-200">{item.title}</p>
+                <p className="mt-3 text-lg font-semibold text-white">{item.title}</p>
+                <p className="mt-3 text-sm leading-7 text-slate-400">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+        <section className="grid gap-4 lg:grid-cols-3">
             {agents.map((agent, index) => (
               <motion.div
                 key={agent.name}
@@ -227,7 +288,6 @@ export function SaaSLanding({ onGetStarted }: { onGetStarted?: () => void }) {
                 <p className="mt-3 text-sm leading-7 text-slate-400">{agent.blurb}</p>
               </motion.div>
             ))}
-          </div>
         </section>
 
         <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">

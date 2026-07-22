@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import { AuthButton } from "@/features/auth/auth-button";
-import { Button } from "@/components/ui/button";
+import { AuthButton } from "@/frontend/features/auth/auth-button";
+import { Button } from "@/frontend/components/ui/button";
 
 export function HeroShell({ children }: { children: React.ReactNode }) {
   return (

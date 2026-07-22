@@ -3,56 +3,57 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Bot, BrainCircuit, Briefcase, ClipboardCheck, Compass, FileText, GraduationCap, Sparkles, UserRoundSearch, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/frontend/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/frontend/components/ui/card";
+import { supportedModels } from "@/frontend/lib/ai-models";
 
 const agents = [
   {
     key: "resume",
     title: "Resume Agent",
-    description: "Optimizes your resume for target roles with ATS-focused phrasing and impact-driven bullets.",
+    description: "Analyze, improve, and optimize your resume for ATS and recruiter review.",
     icon: FileText,
   },
   {
     key: "jobs",
     title: "Job Match Agent",
-    description: "Finds the strongest role matches based on skills, goals, and company fit.",
+    description: "Match your background to roles and explain where you fit best.",
     icon: Briefcase,
   },
   {
     key: "cover-letter",
     title: "Cover Letter Agent",
-    description: "Drafts personalized, persuasive cover letters that align with each opportunity.",
+    description: "Generate tailored cover letters, follow-up emails, and recruiter outreach copy.",
     icon: ClipboardCheck,
   },
   {
     key: "interview",
     title: "Interview Coach Agent",
-    description: "Prepares mock questions, feedback, and answer frameworks for your next interview.",
+    description: "Simulate interview questions, craft answers, and improve your confidence.",
     icon: BrainCircuit,
   },
   {
     key: "roadmap",
     title: "Career Roadmap Agent",
-    description: "Maps a step-by-step path for promotions, pivots, or skill building.",
+    description: "Build learning plans, certification paths, and career milestones.",
     icon: Compass,
   },
   {
     key: "portfolio",
     title: "Portfolio Review Agent",
-    description: "Critiques your work samples and improves story structure for hiring teams.",
+    description: "Review your portfolio story, GitHub, and project presentation quality.",
     icon: UserRoundSearch,
   },
   {
     key: "tracker",
     title: "Application Tracker Agent",
-    description: "Keeps your submissions, follow-ups, and outcomes organized in real time.",
+    description: "Track every application stage from saved roles to offers and rejections.",
     icon: Sparkles,
   },
   {
     key: "supervisor",
     title: "AI Supervisor Agent",
-    description: "Coordinates the full system, prioritizes tasks, and ensures every agent works together.",
+    description: "Orchestrates the right agents in sequence for your career goals.",
     icon: GraduationCap,
   },
 ] as const;
@@ -63,6 +64,7 @@ export function AgentsSection() {
   const [activeAgent, setActiveAgent] = useState<AgentCard | null>(null);
   const [loadingAgent, setLoadingAgent] = useState<string | null>(null);
   const [agentResponse, setAgentResponse] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState(supportedModels[0].value);
 
   async function handleAgentRun(agent: AgentCard) {
     setActiveAgent(agent);
@@ -77,6 +79,7 @@ export function AgentsSection() {
           agent: agent.key,
           prompt: `Help with ${agent.title}`,
           context: "User wants practical next steps.",
+          model: selectedModel,
         }),
       });
 
@@ -97,9 +100,23 @@ export function AgentsSection() {
           <p className="text-sm font-medium uppercase tracking-[0.25em] text-cyan-200">Specialist agents</p>
           <h2 className="mt-2 text-3xl font-semibold text-white">One AI teammate for every part of your job search.</h2>
         </div>
-        <Button className="rounded-full bg-white text-slate-900 hover:bg-slate-100">
-          Launch all agents <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">AI model</label>
+            <select
+              value={selectedModel}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              className="rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-100"
+            >
+              {supportedModels.map((model) => (
+                <option key={model.value} value={model.value}>{model.label}</option>
+              ))}
+            </select>
+          </div>
+          <Button className="rounded-full bg-white text-slate-900 hover:bg-slate-100">
+            Launch all agents <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

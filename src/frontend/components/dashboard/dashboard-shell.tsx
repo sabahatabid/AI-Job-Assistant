@@ -6,24 +6,6 @@ import {
   Bell,
   Briefcase,
   ChevronRight,
-  
-  async function handleAgentRun(agentKey: string, title?: string) {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/agents", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ agent: agentKey, prompt: `Run ${title ?? agentKey}`, context: "dashboard" }),
-      });
-      const data = await res.json();
-      setAgentResponse(data?.reply ?? "No response");
-    } catch (e) {
-      console.error(e);
-      setAgentResponse("Agent request failed.");
-    } finally {
-      setLoading(false);
-    }
-  }
   CircleDollarSign,
   LayoutDashboard,
   MessageSquareText,
@@ -32,10 +14,11 @@ import {
   Sparkles,
   UserCircle2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AssistantClient } from "@/features/assistant/assistant-client";
-import { JobBoard } from "@/features/jobs/job-board";
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Button } from "@/frontend/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/frontend/components/ui/card";
+import { AssistantClient } from "@/frontend/features/assistant/assistant-client";
+import { JobBoard } from "@/frontend/features/jobs/job-board";
 import { AgentsSection } from "./agents-section";
 
 const stats = [
@@ -43,6 +26,13 @@ const stats = [
   { label: "Interviews", value: "18", detail: "3 upcoming" },
   { label: "Offers", value: "4", detail: "1 strong fit" },
   { label: "Resume score", value: "92/100", detail: "Excellent" },
+];
+
+const analyticsData = [
+  { week: "Week 1", applications: 12, interviews: 3 },
+  { week: "Week 2", applications: 18, interviews: 6 },
+  { week: "Week 3", applications: 24, interviews: 9 },
+  { week: "Week 4", applications: 34, interviews: 11 },
 ];
 
 const recentActivity = [
@@ -123,10 +113,22 @@ export function DashboardShell({ onBackToLanding }: { onBackToLanding?: () => vo
                   <CardTitle className="text-white">Pipeline momentum</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex h-56 items-end gap-3 rounded-[24px] border border-white/10 bg-gradient-to-t from-cyan-400/20 to-slate-950/60 p-4">
-                    {[42, 74, 58, 88, 96, 70, 81].map((height, index) => (
-                      <div key={index} className="flex-1 rounded-t-2xl bg-gradient-to-t from-cyan-400 to-indigo-400" style={{ height: `${height}%` }} />
-                    ))}
+                  <div className="h-72 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={analyticsData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#22d3ee" stopOpacity={0.75} />
+                            <stop offset="100%" stopColor="#22d3ee" stopOpacity={0.05} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid stroke="rgba(148,163,184,0.12)" strokeDasharray="3 3" />
+                        <XAxis dataKey="week" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                        <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155' }} itemStyle={{ color: '#fff' }} />
+                        <Area type="monotone" dataKey="applications" stroke="#06b6d4" strokeWidth={3} fill="url(#lineGradient)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
                   </div>
                 </CardContent>
               </Card>

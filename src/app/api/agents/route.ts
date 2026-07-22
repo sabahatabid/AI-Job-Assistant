@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { runAgent } from "@/lib/openrouter";
-import { createServerSupabaseClient } from "@/lib/supabase";
+import { runAgent } from "@/backend/lib/openrouter";
+import { createServerSupabaseClient } from "@/backend/lib/supabase";
 
 export async function POST(request: Request) {
   try {
-    const { agent, prompt, context } = await request.json();
+    const { agent, prompt, context, model } = await request.json();
     const supabase = await createServerSupabaseClient();
     const { data: { user }, error } = await supabase?.auth.getUser() ?? { data: { user: null }, error: null };
 
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const result = await runAgent(agent, prompt, context);
+    const result = await runAgent(agent, prompt, context, model);
 
     if (supabase) {
       await supabase.from("agent_runs").insert({
