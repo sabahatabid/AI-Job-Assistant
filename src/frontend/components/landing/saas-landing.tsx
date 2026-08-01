@@ -6,7 +6,6 @@ import {
   ArrowRight,
   Bot,
   CheckCircle2,
-  ChevronRight,
   CirclePlay,
   ShieldCheck,
   Sparkles,

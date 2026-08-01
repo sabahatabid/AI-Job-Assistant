@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +20,13 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const [message, setMessage] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const callbackError = searchParams.get("error");
+  const [message, setMessage] = useState<string | null>(
+    callbackError === "auth_callback_failed"
+      ? "Sign-in failed. Please try again."
+      : null
+  );
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -60,7 +66,19 @@ export default function LoginPage() {
       return;
     }
 
-    await supabase.auth.signInWithOAuth({ provider: "google" });
+    const redirectTo =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/auth/callback`
+        : "/auth/callback";
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo },
+    });
+
+    if (error) {
+      setMessage(error.message);
+    }
   }
 
   return (

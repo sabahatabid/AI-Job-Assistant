@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   try {
     const { agent, prompt, context, model } = await request.json();
     const supabase = await createServerSupabaseClient();
-    const { data: { user }, error } = await supabase?.auth.getUser() ?? { data: { user: null }, error: null };
+    const { data: { user } } = await supabase?.auth.getUser() ?? { data: { user: null } };
 
     if (!user && !process.env.NEXT_PUBLIC_SUPABASE_URL) {
       return NextResponse.json({

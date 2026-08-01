@@ -8,8 +8,11 @@ export default function Home() {
 
   return (
     <SaaSLanding
-      onGetStarted={() => router.push("/dashboard")}
-      onWatchWalkthrough={() => router.push("/#walkthrough")}
+      onGetStarted={() => router.push("/auth/login")}
+      onWatchWalkthrough={() => {
+        const section = document.getElementById("walkthrough");
+        section?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }}
     />
   );
 }

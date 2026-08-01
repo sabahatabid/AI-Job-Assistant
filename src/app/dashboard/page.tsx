@@ -23,5 +23,19 @@ export default async function DashboardPage() {
     redirect("/auth/login");
   }
 
-  return <DashboardShell />;
+  // Fetch profile if it exists; create a stub if not
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  const displayName =
+    profile?.full_name ||
+    user.user_metadata?.full_name ||
+    user.user_metadata?.name ||
+    user.email?.split("@")[0] ||
+    "there";
+
+  return <DashboardShell user={{ email: user.email ?? "", displayName }} />;
 }
