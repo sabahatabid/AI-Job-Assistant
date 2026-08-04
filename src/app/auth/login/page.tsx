@@ -114,14 +114,6 @@ function LoginForm() {
             {loading ? "Signing in…" : "Sign in"}
           </Button>
         </form>
-        <div className="border-t border-slate-700 pt-4">
-          <Button
-            onClick={handleGoogle}
-            className="w-full rounded-full bg-white text-slate-900 hover:bg-slate-100"
-          >
-            Continue with Google
-          </Button>
-        </div>
         <div className="flex flex-col gap-2 text-sm text-slate-400 sm:flex-row sm:justify-between">
           <Link href="/auth/signup" className="text-cyan-300 hover:text-cyan-200">
             Create account

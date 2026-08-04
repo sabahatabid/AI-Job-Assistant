@@ -11,11 +11,11 @@ export type AgentName =
   | "supervisor";
 
 export const supportedModels = [
-  { id: "openai/gpt-4o-mini", label: "GPT 4o Mini" },
-  { id: "anthropic/claude-3.5", label: "Claude 3.5" },
-  { id: "google/gemini-pro", label: "Gemini Pro" },
-  { id: "deepseek/deepseek-v1", label: "DeepSeek v1" },
-  { id: "llama/llama-2-70b", label: "Llama 2" },
+  { id: "google/gemma-4-26b-a4b-it:free", label: "Gemma 4 (Free)" },
+  { id: "nvidia/nemotron-3-super-120b-a12b:free", label: "Nemotron Super (Free)" },
+  { id: "openai/gpt-oss-20b:free", label: "GPT OSS 20B (Free)" },
+  { id: "nvidia/nemotron-3-ultra-550b-a55b:free", label: "Nemotron Ultra (Free)" },
+  { id: "openrouter/auto", label: "Auto (Best Available)" },
 ];
 
 const agentPrompts: Record<AgentName, { label: string; system: string }> = {
@@ -54,7 +54,7 @@ const agentPrompts: Record<AgentName, { label: string; system: string }> = {
 };
 
 export function getDefaultModel() {
-  return supportedModels[0].id;
+  return "google/gemma-4-26b-a4b-it:free";
 }
 
 export function createOpenRouterClient(apiKey: string) {
