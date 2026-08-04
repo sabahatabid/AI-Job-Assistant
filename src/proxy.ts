@@ -1,14 +1,21 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // If Supabase is not configured, allow all traffic through
-  if (!supabaseUrl || !supabaseAnonKey) {
+  // Allow traffic through if Supabase is not configured yet
+  const isValidConfig =
+    supabaseUrl &&
+    supabaseAnonKey &&
+    supabaseUrl.startsWith("http") &&
+    !supabaseUrl.includes("your_supabase") &&
+    !supabaseAnonKey.includes("your_supabase");
+
+  if (!isValidConfig) {
     return supabaseResponse;
   }
 
@@ -29,21 +36,21 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Refresh the session — do NOT remove this call
+  // Refresh session — required for Supabase SSR auth
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
 
-  // Protect /dashboard routes — redirect to login if unauthenticated
+  // Protect /dashboard — redirect unauthenticated users to login
   if (pathname.startsWith("/dashboard") && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
 
-  // Redirect authenticated users away from auth pages
+  // Redirect logged-in users away from auth pages
   if (pathname.startsWith("/auth/") && user) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
@@ -55,14 +62,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico
-     * - public folder
-     * - api routes (handled individually)
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,7 +18,8 @@ const loginSchema = z.object({
 
 type LoginValues = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+// Separate component so useSearchParams is inside Suspense
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackError = searchParams.get("error");
@@ -36,7 +37,7 @@ export default function LoginPage() {
 
   async function onSubmit(values: LoginValues) {
     if (!supabase) {
-      setMessage("Supabase is not configured.");
+      setMessage("Supabase is not configured. Add your keys to .env.local");
       return;
     }
 
@@ -45,7 +46,6 @@ export default function LoginPage() {
       email: values.email,
       password: values.password,
     });
-
     setLoading(false);
 
     if (error) {
@@ -62,7 +62,7 @@ export default function LoginPage() {
 
   async function handleGoogle() {
     if (!supabase) {
-      setMessage("Supabase is not configured.");
+      setMessage("Supabase is not configured. Add your keys to .env.local");
       return;
     }
 
@@ -82,47 +82,77 @@ export default function LoginPage() {
   }
 
   return (
+    <Card className="border-white/10 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/40">
+      <CardHeader>
+        <CardTitle className="text-3xl">Sign in to CareerPilot AI</CardTitle>
+        <p className="mt-3 text-sm text-slate-400">
+          Secure access to your career dashboard, AI agents, and resume intelligence.
+        </p>
+      </CardHeader>
+      <CardContent className="mt-6 space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-200">Email</label>
+            <Input type="email" placeholder="you@company.com" {...register("email")} />
+            {errors.email && (
+              <p className="mt-2 text-sm text-rose-400">{errors.email.message}</p>
+            )}
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-200">Password</label>
+            <Input type="password" placeholder="Enter your password" {...register("password")} />
+            {errors.password && (
+              <p className="mt-2 text-sm text-rose-400">{errors.password.message}</p>
+            )}
+          </div>
+          {message ? <p className="text-sm text-rose-300">{message}</p> : null}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-full bg-cyan-500 text-slate-950 hover:bg-cyan-400"
+          >
+            {loading ? "Signing in…" : "Sign in"}
+          </Button>
+        </form>
+        <div className="border-t border-slate-700 pt-4">
+          <Button
+            onClick={handleGoogle}
+            className="w-full rounded-full bg-white text-slate-900 hover:bg-slate-100"
+          >
+            Continue with Google
+          </Button>
+        </div>
+        <div className="flex flex-col gap-2 text-sm text-slate-400 sm:flex-row sm:justify-between">
+          <Link href="/auth/signup" className="text-cyan-300 hover:text-cyan-200">
+            Create account
+          </Link>
+          <Link href="/auth/forgot" className="text-cyan-300 hover:text-cyan-200">
+            Forgot password?
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function LoginPage() {
+  return (
     <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl">
-        <Card className="border-white/10 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/40">
-          <CardHeader>
-            <CardTitle className="text-3xl">Sign in to CareerPilot AI</CardTitle>
-            <p className="mt-3 text-sm text-slate-400">
-              Secure access to your career dashboard, AI agents, and resume intelligence.
-            </p>
-          </CardHeader>
-          <CardContent className="mt-6 space-y-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-200">Email</label>
-                <Input type="email" placeholder="you@company.com" {...register("email")} />
-                {errors.email && <p className="mt-2 text-sm text-rose-400">{errors.email.message}</p>}
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-200">Password</label>
-                <Input type="password" placeholder="Enter your password" {...register("password")} />
-                {errors.password && <p className="mt-2 text-sm text-rose-400">{errors.password.message}</p>}
-              </div>
-              {message ? <p className="text-sm text-rose-300">{message}</p> : null}
-              <Button type="submit" disabled={loading} className="w-full rounded-full bg-cyan-500 text-slate-950 hover:bg-cyan-400">
-                {loading ? "Signing in…" : "Sign in"}
-              </Button>
-            </form>
-            <div className="border-t border-slate-700 pt-4">
-              <Button onClick={handleGoogle} className="w-full rounded-full bg-white text-slate-900 hover:bg-slate-100">
-                Continue with Google
-              </Button>
-            </div>
-            <div className="flex flex-col gap-2 text-sm text-slate-400 sm:flex-row sm:justify-between">
-              <Link href="/auth/signup" className="text-cyan-300 hover:text-cyan-200">
-                Create account
-              </Link>
-              <Link href="/auth/forgot" className="text-cyan-300 hover:text-cyan-200">
-                Forgot password?
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        <Suspense
+          fallback={
+            <Card className="border-white/10 bg-slate-900/80 p-8">
+              <CardHeader>
+                <CardTitle className="text-3xl">Sign in to CareerPilot AI</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-slate-400">Loading…</p>
+              </CardContent>
+            </Card>
+          }
+        >
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
